@@ -1,0 +1,1 @@
+socat TCP-LISTEN:9999,fork, EXEC:./fuck

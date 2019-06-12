@@ -1,0 +1,16 @@
+2019/06/06 19:33:47 socat[3965] E bind(5, {AF=2 0.0.0.0:9999}, 16): Address already in use
+2019/06/06 19:52:43 socat[5201] E exactly 2 addresses required (there are 1); use option "-h" for help
+./caonima.sh: 2: ./caonima.sh: fork: not found
+2019/06/06 19:52:50 socat[5208] E exactly 2 addresses required (there are 1); use option "-h" for help
+./caonima.sh: 2: ./caonima.sh: fork: not found
+Killed
+Killed
+2019/06/07 01:53:42 socat[14938] E waitpid(): child 14939 exited on signal 11
+2019/06/07 01:54:05 socat[14956] E waitpid(): child 14957 exited on signal 11
+2019/06/07 01:55:24 socat[14988] E waitpid(): child 14989 exited on signal 11
+2019/06/07 01:56:36 socat[15089] E waitpid(): child 15090 exited on signal 11
+2019/06/07 01:57:19 socat[15108] E waitpid(): child 15109 exited on signal 11
+2019/06/09 11:10:12 socat[8015] E write(5, 0x5573c3624010, 1): Broken pipe
+2019/06/09 11:10:27 socat[8037] E write(5, 0x5573c3624010, 1): Broken pipe
+Killed
+Killed
